@@ -34,7 +34,7 @@ bool codec_wav::decoder(const char* wav_file) {
 				fread(&_header.BytesPerSec, sizeof(int32_t), 1, fp);
 				fread(&_header.BlockAlign, sizeof(int16_t), 1, fp);
 				fread(&_header.BitsPerSample, sizeof(int16_t), 1, fp);
-				//处理数据
+				//数据处理
 				fread(_header.ckid2, sizeof(char), 4, fp); _header.ckid2[4] = '\0';
 				fread(&_header.cksize2, sizeof(int32_t), 1, fp);
 				if (_channel == 1) {
@@ -101,18 +101,17 @@ bool codec_wav::encoder(const char* wav_file) {
 	return false;
 }
 
-bool codec_wav::decoder_pcm(const char* pcm_file, int16_t channel) {
+bool decoder_pcm(const char* pcm_file, int16_t* _pcm_data_L, int16_t* _pcm_data_R, int32_t& _data_size, const int16_t _channel) {
 	FILE* fp = fopen(pcm_file, "rb");
 	if (fp) {
 		fseek(fp, 0, SEEK_END);
-		_data_size = ftell(fp) / 2 / channel;
-		_channel = channel;
+		_data_size = ftell(fp) / 2 / _channel;
 		fseek(fp, 0, SEEK_SET);
-		if (channel == 1) {
+		if (_channel == 1) {
 			_pcm_data_L = (int16_t*)malloc(_data_size * sizeof(int16_t));
 			fread(_pcm_data_L, sizeof(int16_t), _data_size, fp);
 		}
-		else if (channel == 2) {
+		else if (_channel == 2) {
 			_pcm_data_L = (int16_t*)malloc(_data_size * sizeof(int16_t));
 			_pcm_data_R = (int16_t*)malloc(_data_size * sizeof(int16_t));
 			for (int i = 0; i < _data_size; i++) {
@@ -126,7 +125,7 @@ bool codec_wav::decoder_pcm(const char* pcm_file, int16_t channel) {
 	return false;
 }
 
-bool codec_wav::encoder_pcm(const char* pcm_file) {
+bool encoder_pcm(const char* pcm_file, int16_t* _pcm_data_L, int16_t* _pcm_data_R, const int32_t _data_size, const int16_t _channel) {
 	if (_pcm_data_L == NULL) {
 		return false;
 	}

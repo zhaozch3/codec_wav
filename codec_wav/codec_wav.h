@@ -31,12 +31,16 @@ public:
 
 	codec_wav();
 	~codec_wav();
-
+	
+	//wav文件 -> pcm流
 	bool decoder(const char* wav_file);
+	//pcm流 -> wav文件
 	bool encoder(const char* wav_file);
-
-	bool decoder_pcm(const char* pcm_file, int16_t channel);
-	bool encoder_pcm(const char* pcm_file);
 };
+
+//pcm文件 -> pcm流
+bool decoder_pcm(const char* pcm_file, int16_t* _pcm_data_L, int16_t* _pcm_data_R, int32_t& _data_size, const int16_t _channel);
+//pcm流 -> pcm文件
+bool encoder_pcm(const char* pcm_file, int16_t* _pcm_data_L, int16_t* _pcm_data_R, const int32_t _data_size, const int16_t _channel);
 
 #endif
